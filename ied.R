@@ -266,16 +266,14 @@ wb <- loadWorkbook(paste(base_resultados, sep = "/"),
   xlsxFile = NULL
 )
 names(wb) <- hojas_clean
-saveWorkbook(wb, paste(path,
-  paste0("names", base_resultados),
-  sep = "/"
-), overwrite = TRUE)
+new_names <- paste("input",
+                   paste0("names", sub(".*\\/", "", base_resultados)),
+                   sep = "/"
+)
+saveWorkbook(wb, new_names, overwrite = TRUE)
 # funcion para cargar base
 load_result <- function(sheets) {
-  base_resultados_names <- paste(path,
-    paste0("names", base_resultados),
-    sep = "/"
-  )
+  base_resultados_names <- new_names
   t1 <- sheets[1] %in% hojas_clean # verificador hoja 1
   t2 <- sheets[2] %in% hojas_clean # verificador hoja 2
   if (!t1) stop("La hoja uno no se encuentra en el excel")
@@ -482,7 +480,7 @@ ied_final <- ied_final %>%
              mutate(sector = str_replace(sector, "turistico", "Turístico")) %>%
              mutate(sector = str_to_title(sector))
 # cargar acuerdos
-cod_19032019_a <- read_excel("ied/cod_19032019.xlsx", 
+cod_19032019_a <- read_excel("auxi/cod_19032019.xlsx", 
                            sheet = "Acuerdo")
 names(cod_19032019_a) <- c("number", "pais", "Acuerdo")
 cod_19032019_a <- cod_19032019_a %>% 
@@ -490,7 +488,7 @@ cod_19032019_a <- cod_19032019_a %>%
                   left_join(cnames) %>% 
                   select(iso, Acuerdo)
 # cargar bloque
-cod_19032019_b <- read_excel("ied/cod_19032019.xlsx", 
+cod_19032019_b <- read_excel("auxi/cod_19032019.xlsx", 
                            sheet = "Bloque")
 names(cod_19032019_b) <- c("number", "pais", "Bloque")
 cod_19032019_b <- cod_19032019_b %>% 
@@ -508,13 +506,13 @@ ied_final2 <- ied_final %>%
 })
          
 write.xlsx(ied_final2, sheetName = "Datos",
-           paste(path, paste0(paste("ied", month, yearf, sep = "_"), ".xlsx"), sep = "/"))
+           paste("output", paste0(paste("ied", month, yearf, sep = "_"), ".xlsx"), sep = "/"))
 
-wb <- loadWorkbook(paste(path, paste0(paste("ied", month, yearf, sep = "_"), ".xlsx"), sep = "/"))
+wb <- loadWorkbook(paste("output", paste0(paste("ied", month, yearf, sep = "_"), ".xlsx"), sep = "/"))
 addWorksheet(wb, "td_acuerdo")
 addWorksheet(wb, "td_sector")                   
 
-saveWorkbook(wb, file = paste(path, paste0(paste("ied", month, yearf, sep = "_"), ".xlsx"), sep = "/"), overwrite = TRUE)
+saveWorkbook(wb, file = paste("output", paste0(paste("ied", month, yearf, sep = "_"), ".xlsx"), sep = "/"), overwrite = TRUE)
 
 
 
