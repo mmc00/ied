@@ -11,10 +11,9 @@ library(janitor)
 yeari <- "2007"
 yearf <- "2019"
 month <- "dic"
-path <- "ied"
-# base_nombre <- "base_pais_sector_set2019_v.xlsx"
-base_nombre <- "base_pais_sector_dic2019_v.xlsx"
-base_resultados <- "GIIED_dic2019_v.xlsx"
+# base_nombre 
+base_nombre <- paste0("input/","base_pais_sector_dic2019_v.xlsx")
+base_resultados <- paste0("input/", "GIIED_dic2019_v.xlsx")
 # tolerancia
 tol <- 0.001 # para los paises
 tolb <- 0.1001 # para "otros" paises en la base
@@ -25,7 +24,7 @@ base_empresarial <- list()
 # funcion para cargar base
 load_empresarial <- function(base, y) {
   suppressMessages({
-    x <- read_excel(paste(path, base, sep = "/"), # cargar base
+    x <- read_excel(paste(base, sep = "/"), # cargar base
       sheet = paste("Empresarial", y) # seleccion de hoja por year
     )
   })
@@ -117,7 +116,7 @@ names(base_empresarial) <- yeari:yearf
 # modifcacion de variables ------------------------------------------------
 # cargar nombres de paises del Banco Mundial
 # https://wits.worldbank.org/wits/wits/witshelp-es/Content/Codes/Country_Codes.htm
-countries_names <- read_excel("ied/countries_names.xlsx")
+countries_names <- read_excel("auxi/countries_names.xlsx")
 # la base de countries sin repetidos (para pegar por iso)
 cnames <- countries_names %>%
   select(-pais_clean) %>%
@@ -177,7 +176,7 @@ bempresarial <- bind_rows(base_empresarial) %>%
   filter(sector != "total general")
 # cargar base INMOBILIARIO ------------------------------------------------
 suppressMessages({
-  inmo <- read_excel(paste(path, base_nombre, sep = "/"), # cargar base
+  inmo <- read_excel(paste(base_nombre, sep = "/"), # cargar base
                      sheet = paste("Inmobiliaria")
   )
 })
@@ -255,7 +254,7 @@ verif <- function(base, corregir = 0) {
 ied_final <- verif(ied_final)
 # resultados --------------------------------------------------------------
 # leer las hojas del excel
-hojas <- excel_sheets(path = paste(path, base_resultados, sep = "/"))
+hojas <- excel_sheets(path = paste(base_resultados, sep = "/"))
 # limpar datos
 hojas_clean <- hojas %>%
   tolower() %>% # convertir en minisculuas
@@ -263,7 +262,7 @@ hojas_clean <- hojas %>%
   sub(" ", "_", .) %>% # cambiar espacios con guion bajo
   sub("-", "_", .) # cambiar guion por guion bajo
 # guardar excel con los nombres correctos
-wb <- loadWorkbook(paste(path, base_resultados, sep = "/"),
+wb <- loadWorkbook(paste(base_resultados, sep = "/"),
   xlsxFile = NULL
 )
 names(wb) <- hojas_clean
